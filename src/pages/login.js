@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import FirebaseContext from '../context/firebase';
+import * as ROUTES from '../constants/routes';
+import { set } from 'date-fns';
 
 export default function Login() {
   const history = useHistory();
@@ -12,10 +14,21 @@ export default function Login() {
   const [error, setError] = useState('');
   const isInvalid = password === '' || emailAddress === '';
 
-  const handleLogin = () => {};
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    try {
+      await firebase.auth().signInWithEmailAndPassword(emailAddress, password);
+      history.push(ROUTES.DASHBORAD);
+    } catch (error) {
+      setEmailAddress('');
+      setPassword('');
+      setError(error.message);
+    }
+  };
 
   useEffect(() => {
-    document.title = 'Login PicApp';
+    document.title = 'Login Instagram';
   }, []);
 
   return (
@@ -62,10 +75,11 @@ export default function Login() {
           </form>
         </div>
         <div className="flex justify-center items-center flex-col w-full bg-white p-4 border border-gray-primary rounded">
-          <p className="text-sm">Don't have an account?{` `}
-          <Link to="/signup" className="font-bold text-blue-medium">
-            Sign up
-          </Link>
+          <p className="text-sm">
+            Don't have an account?{` `}
+            <Link to="/signup" className="font-bold text-blue-medium">
+              Sign up
+            </Link>
           </p>
         </div>
       </div>
