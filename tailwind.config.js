@@ -1,5 +1,33 @@
 module.exports = {
   future: {
-    removeDeprecatedGapUtilities: true
-  }
+    removeDeprecatedGapUtilities: true,
+  },
+  theme: {
+    fill: (theme) => ({ red: theme('colors.red.primary') }),
+    colors: {
+      white: '#ffffff',
+      blue: {
+        medium: '#005c98',
+      },
+      black: {
+        light: '#005c98',
+        faded: '#00000059',
+      },
+      gray: {
+        base: '#616161',
+        background: '#fafafa',
+        primary: '#dbdbdb',
+      },
+      red: {
+        primary: '#ed4956',
+      },
+    },
+  },
 };
+
+// need to create these styles for tailwind:
+// bg-blue-medium
+// text-blue-medium
+// text-red-primary
+// text-gray-base
+// border-gray-primary
