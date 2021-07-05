@@ -2,13 +2,15 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import FirebaseContext from '../context/firebase';
 import * as ROUTES from '../constants/routes';
-import { set } from 'date-fns';
+// import { set } from 'date-fns';
+import { doesUsernameExist } from '../services/firebase';
+import { awaitExpression } from '@babel/types';
 
 export default function SignUp() {
   const history = useHistory();
   const { firebase } = useContext(FirebaseContext);
 
-  const [userName, setUserName] = useState('');
+  const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
@@ -19,10 +21,34 @@ export default function SignUp() {
   const handleSignUp = async (event) => {
     event.preventDefault();
 
-    try {
-
-    } catch (error) {
-
+    const usernameExist = await doesUsernameExist(username);
+    if (!usernameExist.length) {
+      try {
+        const createdUserResult = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(emailAddress, password);
+        //authentication
+        // -> emailAddress & password & username(displayName in firebase)
+        await createdUserResult.user.updateProfile({
+          displayName: username,
+        });
+        await firebase.firestore().collection('users').add({
+          userId: createdUserResult.user.uid,
+          username: username.toLocaleLowerCase(),
+          fullName: fullName.toLocaleLowerCase(),
+          emailAddress: emailAddress.toLocaleLowerCase(),
+          following: [],
+          dateCreated: Date.now,
+        });
+        history.push(ROUTES.DASHBORAD);
+      } catch (error) {
+        setFullName('');
+        setEmailAddress('');
+        setPassword('');
+        setError(error.message)
+      }
+    } else {
+      setError('This username is already taken, please try another.')
     }
   };
 
@@ -54,8 +80,8 @@ export default function SignUp() {
               aria-label="Enter your username"
               placeholder="Username"
               className="text=sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-              onChange={({ target }) => setUserName(target.value)}
-              value={userName}
+              onChange={({ target }) => setUsername(target.value)}
+              value={username}
             />
             <input
               type="text"
@@ -94,7 +120,7 @@ export default function SignUp() {
         <div className="flex justify-center items-center flex-col w-full bg-white p-4 border border-gray-primary rounded">
           <p className="text-sm">
             Have an account?{` `}
-            <Link to="/login" className="font-bold text-blue-medium">
+            <Link to={ROUTES.LOGIN} className="font-bold text-blue-medium">
               Log In
             </Link>
           </p>
