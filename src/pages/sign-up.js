@@ -38,7 +38,7 @@ export default function SignUp() {
           fullName: fullName.toLocaleLowerCase(),
           emailAddress: emailAddress.toLocaleLowerCase(),
           following: [],
-          dateCreated: Date.now,
+          dateCreated: Date.now(),
         });
         history.push(ROUTES.DASHBORAD);
       } catch (error) {
