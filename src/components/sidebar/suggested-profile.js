@@ -35,7 +35,6 @@ export default function SuggestedProfile({
         />
         <Link to={`/p/${username}`}>
           <p className="font-bold text-sm">{username}</p>
-          <p>{profileDocId}</p>
         </Link>
       </div>
       <button className="text-xs font-bold text-blue-medium" onClick={handleFollowedUser}>Follow</button>
